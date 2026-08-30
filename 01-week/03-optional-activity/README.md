@@ -19,8 +19,8 @@ javac HolaMundo.java
 java HolaMundo
 
 # Compilación y ejecución del programa principal
-javac Estudiante.java Main.java
-java Main
+javac Estudiante.java MainEstudiante.java
+java MainEstudiante
 
 ![Evidencia de Ejecución](evidencia.png)
 ```

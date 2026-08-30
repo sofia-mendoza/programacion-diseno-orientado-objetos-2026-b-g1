@@ -2,13 +2,13 @@
 
 ## Descripción
 
-Este proyecto implementa una clase `CuentaBancaria` aplicando conceptos fundamentales de Programación Orientada a Objetos, especialmente encapsulamiento, validación de datos y redefinición de métodos de la clase `Object`.
+Este proyecto implementa una clase `Ejercicio` aplicando conceptos fundamentales de Programación Orientada a Objetos, especialmente encapsulamiento, validación de datos y redefinición de métodos de la clase `Object`.
 
 La clase permite crear cuentas bancarias, realizar depósitos y retiros, y comparar cuentas mediante su número de cuenta.
 
 ## Design decisions
 
-The `CuentaBancaria` class uses encapsulation by declaring its attributes as private, preventing direct access from outside the class.
+The `Ejercicio` class uses encapsulation by declaring its attributes as private, preventing direct access from outside the class.
 
 The class protects the invariant that the account balance must always be greater than or equal to zero.
 

@@ -12,10 +12,10 @@ Comandos ejecutados en la terminal para compilar y ejecutar el programa:
 
 ```bash
 # Compilación de los archivos .java
-javac Libro.java Main.java
+javac Libro.java MainLibro.java
 
 # Ejecución de la clase principal
-java Main
+java MainLibro
 ```
 ## Parte B: Explicación Teórica
 1. Aliasing de Referencias
