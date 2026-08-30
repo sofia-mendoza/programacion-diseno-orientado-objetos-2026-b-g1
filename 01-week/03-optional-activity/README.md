@@ -22,6 +22,8 @@ java HolaMundo
 javac Estudiante.java Main.java
 java Main
 
+![Evidencia de Ejecución](evidencia.png)
+
 ## Parte C: Modelado de Dominio Real y Abstracción
 Dominio Seleccionado: Tienda de Comercio Electrónico (E-Commerce)
 
