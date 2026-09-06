@@ -42,10 +42,10 @@ public class CuentaBancaria {
     public boolean equals(Object o) {
         if (this == o) {
             return true;
-        } else if (!(o instanceof Ejercicio)) {
+        } else if (!(o instanceof CuentaBancaria)) {
             return false;
         } else {
-            Ejercicio otra = (Ejercicio)o;
+            CuentaBancaria otra = (CuentaBancaria) o;
             return this.numeroCuenta.equals(otra.numeroCuenta);
         }
     }
