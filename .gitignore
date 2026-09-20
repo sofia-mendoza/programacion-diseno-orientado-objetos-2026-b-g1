@@ -1,2 +1,12 @@
 node_modules/
 package-lock.json
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Archivos compilados de Java
+*.class
+
+# Carpeta de compilación
+out/
