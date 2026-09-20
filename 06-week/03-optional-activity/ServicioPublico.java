@@ -11,6 +11,6 @@
     }
 
     public void mostrarRuta() {
-        System.out.println("El bus " + marca + " tiene " + llantas + " llantas y sigue la ruta " + ruta);
+        System.out.println("El bus " + marca + " tene " + llantas + " llantas y sigue la ruta " + ruta);
     }
 }

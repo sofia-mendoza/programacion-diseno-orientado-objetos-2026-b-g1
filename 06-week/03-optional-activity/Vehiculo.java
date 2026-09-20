@@ -13,7 +13,7 @@
     }
 
     public void drive() {
-        System.out.println("El vehículo está en movimiento.");
+        System.out.println("El vehículo está en movimient.");
     }
 
     public void stop() {
