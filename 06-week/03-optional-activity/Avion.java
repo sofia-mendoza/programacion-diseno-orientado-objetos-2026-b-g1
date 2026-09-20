@@ -7,11 +7,11 @@
 
     public Avion(String marca, int llantas, boolean enVuelo) {
         super(marca, llantas);
-        this.enVuelo = false;
+        this.enVuelo = enVuelo;
     }
 
     public void despegar() {
-        if (!enVuelo) {
+        if (enVuelo) {
             enVuelo = true;
             System.out.println("El avión " + marca + " tiene " + llantas + " llantas y ha despegado.");
         }
