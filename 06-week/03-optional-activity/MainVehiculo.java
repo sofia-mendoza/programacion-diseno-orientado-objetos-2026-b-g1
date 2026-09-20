@@ -12,7 +12,7 @@
         miCarro.activarModoTurbo();
 
 
-        ServicioPublico miServicio = new ServicioPublico("Marcoolo", 4, 63);
+        ServicioPublico miServicio = new ServicioPublico("Marcopolo", 4, 63);
         miServicio.drive();
         miServicio.mostrarRuta();
 

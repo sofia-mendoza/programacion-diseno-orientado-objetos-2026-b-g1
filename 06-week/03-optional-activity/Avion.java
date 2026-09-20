@@ -16,7 +16,7 @@
             System.out.println("El avión " + marca + " tiene " + llantas + " llantas y ha despegado.");
         }
         else {
-            System.out.println("El avión " + marca + " tien " + llantas + " llantas y se encuentra en tierra.");
+            System.out.println("El avión " + marca + " tiene " + llantas + " llantas y se encuentra en tierra.");
         }
     }
 

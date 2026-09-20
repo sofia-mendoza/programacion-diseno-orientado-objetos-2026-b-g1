@@ -11,7 +11,7 @@
     }
 
     public void activarModoTurbo() {
-        System.out.println("El " + marca + " tiene " + llantas + " llanta y activó modo turbo con una potencia de " + potencia + " caballos de fuerza.");
+        System.out.println("El " + marca + " tiene " + llantas + " llantas y activó modo turbo con una potencia de " + potencia + " caballos de fuerza.");
     }
 
 }
