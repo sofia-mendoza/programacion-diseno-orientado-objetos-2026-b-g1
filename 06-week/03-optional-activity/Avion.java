@@ -7,7 +7,7 @@
 
     public Avion(String marca, int llantas, boolean enVuelo) {
         super(marca, llantas);
-        this.enVuelo = enVuelo;
+        this.enVuelo = false;
     }
 
     public void despegar() {
