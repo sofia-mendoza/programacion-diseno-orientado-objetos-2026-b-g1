@@ -6,7 +6,7 @@ class Nodo {
     Nodo(int valor) { this.valor = valor; }
 }
 
-public class Main{
+public class MainNodo{
     static Nodo insertar(Nodo n, int v){
         if (n == null) return new Nodo(v);
         if (v < n.valor) n.izq = insertar(n.izq, v);
@@ -26,5 +26,17 @@ public class Main{
         for (int v : new int[]{50, 30, 70, 20, 40}) raiz = insertar(raiz, v);
         System.out.println("Árbol: ");
         inorden(raiz);
+
+
+        Map<String, List<String>> grafo = new HashMap<>();
+        grafo.put("A", List.of("B", "C"));
+        grafo.put("B", List.of("A"));
+        grafo.put("C", List.of("A"));
+
+        System.out.println("\nGrafo.");
+        for (String n : grafo.keySet())
+            System.out.println(n + " -> " + grafo.get(n));
     }
+
+
 }
