@@ -21,4 +21,9 @@ public class ManejadorExcepciones {
         System.out.println("[FileNotFoundException] El archivo no existe o no se puede abrir.");
         System.out.println("Detalle: " + e.getMessage());
     }
+
+    public void manejarEdad(EdadInvalidaException e) {
+        System.out.println("[EdadInvalidaException] Edad no válida.");
+        System.out.println("Detalle: " + e.getMessage());
+    }
 }
