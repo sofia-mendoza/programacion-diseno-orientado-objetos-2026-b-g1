@@ -61,4 +61,10 @@ public class ComponenteService {
     public void eliminar(String codigo) {
         repository.delete(buscarPorCodigo(codigo));
     }
+
+    public List<String> describirTodos() {
+        return repository.findAll().stream()
+                .map(Componente::describir) // cada tipo responde a su manera
+                .toList();
+    }
 }

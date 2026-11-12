@@ -48,4 +48,9 @@ public class ComponenteController {
     public void eliminar(@PathVariable String codigo) {
         service.eliminar(codigo);
     }
+
+    @GetMapping("/descripciones")
+    public List<String> descripciones() {
+        return service.describirTodos();
+    }
 }
