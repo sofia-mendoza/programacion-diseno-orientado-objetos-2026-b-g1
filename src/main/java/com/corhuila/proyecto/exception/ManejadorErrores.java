@@ -38,10 +38,14 @@ public class ManejadorErrores {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", ex.getMessage()));
     }
 
-
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Map<String, String>> integridad(DataIntegrityViolationException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(Map.of("error", "No se puede completar la operación: el registro está en uso o duplicado"));
+    }
+
+    @ExceptionHandler(ArchivoCsvException.class)
+    public ResponseEntity<Map<String, String>> errorArchivo(ArchivoCsvException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", ex.getMessage()));
     }
 }
