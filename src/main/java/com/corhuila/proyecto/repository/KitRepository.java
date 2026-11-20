@@ -10,4 +10,7 @@ public interface KitRepository extends JpaRepository<Kit, Long> {
     Optional<Kit> findByCodigo(String codigo);
 
     boolean existsByCodigo(String codigo);
+
+    // El último kit creado: sirve para calcular el siguiente código
+    Optional<Kit> findTopByOrderByIdDesc();
 }

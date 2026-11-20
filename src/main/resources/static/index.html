@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inventario | Laboratorio de Mecatrónica</title>
+<style>
+  :root { --azul:#2563eb; --azul-osc:#1e3a8a; --fondo:#f1f5f9; --borde:#e2e8f0; --texto:#0f172a; --suave:#64748b; --ok:#16a34a; --error:#dc2626; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family:"Segoe UI", system-ui, -apple-system, Arial, sans-serif; background:var(--fondo); color:var(--texto); }
+  header { background:linear-gradient(135deg, var(--azul-osc), var(--azul)); color:#fff; padding:28px 24px; }
+  .contenido { max-width:1100px; margin:0 auto; }
+  header h1 { margin:0 0 4px; font-size:1.7rem; }
+  header p { margin:0; opacity:.85; }
+  main { max-width:1100px; margin:0 auto; padding:24px; }
+
+  .resumen { display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:14px; margin-bottom:20px; }
+  .dato { background:#fff; border-radius:12px; padding:16px; box-shadow:0 1px 3px rgba(15,23,42,.08); border-left:4px solid var(--azul); }
+  .dato span { display:block; font-size:.8rem; color:var(--suave); }
+  .dato strong { font-size:1.7rem; }
+  .dato.alerta { border-left-color:var(--error); }
+
+  .pestanas { display:flex; gap:8px; margin-bottom:20px; }
+  .pestana { border:0; background:#e2e8f0; padding:10px 18px; border-radius:999px; font-weight:600; cursor:pointer; color:var(--suave); font-size:.95rem; }
+  .pestana.activa { background:var(--azul); color:#fff; }
+
+  .tarjeta { background:#fff; border-radius:12px; padding:20px; box-shadow:0 1px 3px rgba(15,23,42,.08); margin-bottom:20px; }
+  .tarjeta h2 { margin:0 0 14px; font-size:1.1rem; }
+  .tarjeta p { margin:0 0 12px; color:var(--suave); font-size:.9rem; }
+
+  .formulario { display:grid; grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); gap:12px; }
+  label { display:flex; flex-direction:column; gap:4px; font-size:.82rem; font-weight:600; color:var(--suave); }
+  input, select { padding:9px 10px; border:1px solid var(--borde); border-radius:8px; font-size:.95rem; font-family:inherit; }
+  input:focus, select:focus { outline:2px solid #93c5fd; border-color:var(--azul); }
+  .fila-botones { grid-column:1 / -1; display:flex; gap:10px; flex-wrap:wrap; }
+  .nota { grid-column:1 / -1; margin:0; font-size:.82rem; color:var(--suave); }
+
+  .btn { border:0; padding:9px 16px; border-radius:8px; font-weight:600; cursor:pointer; background:var(--azul); color:#fff; font-size:.9rem; }
+  .btn:hover { filter:brightness(1.1); }
+  .btn.sec { background:#fff; color:var(--azul); border:1px solid var(--azul); }
+  .btn.peligro { background:var(--error); }
+  .btn.peq { padding:5px 10px; font-size:.8rem; }
+
+  .barra { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px; }
+  .barra h2 { margin:0; }
+  .herramientas { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  .envoltorio { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:.92rem; }
+  th { text-align:left; background:#f8fafc; color:var(--suave); font-size:.78rem; text-transform:uppercase; letter-spacing:.04em; }
+  th, td { padding:11px 10px; border-bottom:1px solid var(--borde); }
+  tbody tr:hover td { background:#f8fafc; }
+
+  .insignia { display:inline-block; padding:3px 10px; border-radius:999px; font-size:.75rem; font-weight:700; }
+  .cat-MECANICA_POTENCIA { background:#dcfce7; color:#15803d; }
+  .cat-ELECTRONICA_INSTRUMENTACION { background:#dbeafe; color:#1d4ed8; }
+  .cat-AUTOMATIZACION_CONTROL { background:#ffedd5; color:#c2410c; }
+  .cat-ROBOTICA { background:#ede9fe; color:#6d28d9; }
+  .cat-PROTOTIPADO_MANUFACTURA { background:#fef9c3; color:#a16207; }
+  .estado-PRESTADO { background:#fee2e2; color:#b91c1c; }
+  .estado-DEVUELTO { background:#dcfce7; color:#15803d; }
+  .tipo-DANADO { background:#ffedd5; color:#c2410c; }
+  .tipo-EXTRAVIADO { background:#fee2e2; color:#b91c1c; }
+  .tipo-FUERA_DE_SERVICIO { background:#e2e8f0; color:#475569; }
+  .bajo { background:#fee2e2; color:#b91c1c; margin-left:6px; }
+  .suave { color:var(--suave); }
+  .vacio { text-align:center; color:var(--suave); padding:20px; }
+  .oculto { display:none !important; }
+
+  .kit { border:1px solid var(--borde); border-radius:10px; padding:14px; margin-bottom:12px; }
+  .kit-cab { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; gap:10px; }
+  .fichas { display:flex; flex-wrap:wrap; gap:8px; }
+  .ficha { padding:5px 10px; border-radius:999px; font-size:.82rem; font-weight:600; }
+  .quitar { border:0; background:transparent; cursor:pointer; font-size:1rem; color:inherit; margin-left:4px; }
+
+  .toast { position:fixed; top:16px; right:16px; padding:12px 18px; border-radius:10px; color:#fff; font-weight:600; box-shadow:0 6px 20px rgba(0,0,0,.2); opacity:0; transform:translateY(-10px); pointer-events:none; transition:.25s; z-index:10; max-width:360px; }
+  .toast.visible { opacity:1; transform:none; }
+  .toast.ok { background:var(--ok); }
+  .toast.error { background:var(--error); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="contenido">
+    <h1>Inventario del Laboratorio de Mecatrónica</h1>
+    <p>Mecánica, electrónica, automatización, robótica, prototipado y kits</p>
+  </div>
+</header>
+
+<main>
+  <section class="resumen">
+    <div class="dato"><span>Componentes</span><strong id="statTotal">0</strong></div>
+    <div class="dato"><span>Categorías</span><strong id="statCategorias">0</strong></div>
+    <div class="dato alerta"><span>Bajo stock</span><strong id="statBajo">0</strong></div>
+    <div class="dato"><span>Kits</span><strong id="statKits">0</strong></div>
+    <div class="dato"><span>Préstamos activos</span><strong id="statPrestamos">0</strong></div>
+  </section>
+
+  <div class="pestanas">
+    <button class="pestana activa" id="pestanaComponentes">Componentes</button>
+    <button class="pestana" id="pestanaKits">Kits</button>
+    <button class="pestana" id="pestanaPrestamos">Préstamos</button>
+    <button class="pestana" id="pestanaNovedades">Novedades</button>
+  </div>
+
+  <!-- ===== PANEL COMPONENTES ===== -->
+  <div id="panelComponentes">
+    <section class="tarjeta">
+      <h2 id="tituloFormulario">Registrar componente</h2>
+      <form id="formulario" class="formulario">
+        <label>Categoría
+          <select id="categoria"></select>
+        </label>
+        <label>Nombre <input id="nombre" required></label>
+        <label>Cantidad <input id="cantidad" type="number" min="0" required></label>
+        <label>Ubicación <input id="ubicacion" required></label>
+        <label><span id="etiquetaDetalle">Detalle</span> <input id="detalle" required></label>
+        <p class="nota" id="notaCodigo">El código se genera automáticamente al guardar.</p>
+        <div class="fila-botones">
+          <button type="submit" class="btn" id="btnGuardar">Crear componente</button>
+          <button type="button" class="btn sec oculto" id="btnCancelar">Cancelar edición</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="tarjeta">
+      <div class="barra">
+        <h2>Componentes</h2>
+        <div class="herramientas">
+          <select id="filtroCategoria">
+            <option value="">Todas las categorías</option>
+          </select>
+          <input id="buscar" placeholder="Buscar código, nombre o ubicación">
+          <button class="btn peq" id="btnBuscar">Buscar</button>
+          <button class="btn sec peq" id="btnTodos">Ver todos</button>
+          <button class="btn sec peq" id="btnBajoStock">Solo bajo stock</button>
+          <select id="tamPagina">
+            <option value="8" selected>8 por página</option>
+            <option value="15">15 por página</option>
+            <option value="35">35 por página</option>
+          </select>
+        </div>
+      </div>
+      <div class="envoltorio">
+        <table>
+          <thead>
+            <tr><th>Código</th><th>Categoría</th><th>Nombre</th><th>Cantidad</th><th>Ubicación</th><th>Detalle</th><th>Acciones</th></tr>
+          </thead>
+          <tbody id="cuerpo"></tbody>
+        </table>
+      </div>
+      <div class="barra" style="margin-top: 12px; margin-bottom: 0;">
+        <span id="infoPagina" class="suave">Página 1 de 1</span>
+        <div class="herramientas">
+          <button class="btn sec peq" id="btnAnterior" type="button">Anterior</button>
+          <button class="btn sec peq" id="btnSiguiente" type="button">Siguiente</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ===== PANEL KITS ===== -->
+  <div id="panelKits" class="oculto">
+    <section class="tarjeta">
+      <h2>Crear kit</h2>
+      <form id="formKit" class="formulario">
+        <label>Nombre del kit <input id="kitNombre" required></label>
+        <p class="nota">El código del kit se genera automáticamente al guardar.</p>
+        <div class="fila-botones"><button type="submit" class="btn">Crear kit</button></div>
+      </form>
+    </section>
+
+    <section class="tarjeta">
+      <h2>Agregar un componente a un kit</h2>
+      <form id="formAgregar" class="formulario">
+        <label>Kit <select id="selKit"></select></label>
+        <label>Componente <select id="selComp"></select></label>
+        <div class="fila-botones"><button type="submit" class="btn">Agregar al kit</button></div>
+      </form>
+    </section>
+
+    <section class="tarjeta">
+      <h2>Kits</h2>
+      <div id="listaKits"></div>
+    </section>
+  </div>
+
+  <!-- ===== PANEL PRÉSTAMOS ===== -->
+  <div id="panelPrestamos" class="oculto">
+    <section class="tarjeta">
+      <h2>Registrar préstamo</h2>
+      <form id="formPrestamo" class="formulario">
+        <label>Componente <select id="selPrestamoComp"></select></label>
+        <label>Quién lo solicita <input id="prestamoSolicitante" required></label>
+        <label>Cantidad <input id="prestamoCantidad" type="number" min="1" value="1" required></label>
+        <p class="nota">La fecha y la hora de salida las registra el sistema. Al prestar, se descuentan las unidades del inventario.</p>
+        <div class="fila-botones"><button type="submit" class="btn">Registrar préstamo</button></div>
+      </form>
+    </section>
+
+    <section class="tarjeta">
+      <div class="barra">
+        <h2>Historial de préstamos</h2>
+        <div class="herramientas">
+          <button class="btn sec peq" id="btnPrestamosTodos">Ver todos</button>
+          <button class="btn sec peq" id="btnPrestamosPendientes">Solo pendientes</button>
+        </div>
+      </div>
+      <div class="envoltorio">
+        <table>
+          <thead>
+            <tr><th>N.º</th><th>Componente</th><th>Solicitante</th><th>Cantidad</th><th>Salida</th><th>Devolución</th><th>Estado</th><th>Acciones</th></tr>
+          </thead>
+          <tbody id="cuerpoPrestamos"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <!-- ===== PANEL NOVEDADES ===== -->
+  <div id="panelNovedades" class="oculto">
+    <section class="tarjeta">
+      <h2>Registrar novedad (daño, extravío, fuera de servicio)</h2>
+      <form id="formNovedad" class="formulario">
+        <label>Componente <select id="selNovedadComp"></select></label>
+        <label>Tipo
+          <select id="novedadTipo">
+            <option value="DANADO">Dañado</option>
+            <option value="EXTRAVIADO">Extraviado</option>
+            <option value="FUERA_DE_SERVICIO">Fuera de servicio</option>
+          </select>
+        </label>
+        <label>Cantidad afectada <input id="novedadCantidad" type="number" min="1" value="1" required></label>
+        <label>Descripción <input id="novedadDescripcion" required></label>
+        <p class="nota">La fecha y la hora las registra el sistema. Las unidades afectadas se descuentan del inventario disponible.</p>
+        <div class="fila-botones"><button type="submit" class="btn">Registrar novedad</button></div>
+      </form>
+    </section>
+
+    <section class="tarjeta">
+      <h2>Historial de novedades</h2>
+      <div class="envoltorio">
+        <table>
+          <thead>
+            <tr><th>N.º</th><th>Componente</th><th>Tipo</th><th>Cantidad</th><th>Descripción</th><th>Fecha y hora</th></tr>
+          </thead>
+          <tbody id="cuerpoNovedades"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const API = '/api/componentes';
+const API_KITS = '/api/kits';
+const API_PRESTAMOS = '/api/prestamos';
+const API_NOVEDADES = '/api/novedades';
+const CABECERAS = { 'Content-Type': 'application/json' };
+
+let codigoEditando = null;
+let categorias = [];
+let componentes = [];
+let codigosBajos = new Set();
+let soloBajos = false;
+let prestamos = [];
+let soloPendientes = false;
+
+const $ = id => document.getElementById(id);
+
+function el(etiqueta, texto, clase) {
+  const e = document.createElement(etiqueta);
+  if (texto !== undefined && texto !== null) e.textContent = texto;
+  if (clase) e.className = clase;
+  return e;
+}
+
+function boton(texto, accion, clase) {
+  const b = el('button', texto, clase || 'btn sec peq');
+  b.type = 'button';
+  b.addEventListener('click', accion);
+  return b;
+}
+
+function aviso(texto, esError) {
+  const t = $('toast');
+  t.textContent = texto;
+  t.className = 'toast ' + (esError ? 'error' : 'ok') + ' visible';
+  clearTimeout(aviso.temporizador);
+  aviso.temporizador = setTimeout(() => t.classList.remove('visible'), 3500);
+}
+
+// Envía la petición HTTP al servidor y devuelve la respuesta en JSON
+async function llamar(url, opciones) {
+  const respuesta = await fetch(url, opciones);
+  const texto = await respuesta.text();
+  let datos = null;
+  try { datos = texto ? JSON.parse(texto) : null; } catch (e) { datos = null; }
+  if (!respuesta.ok) {
+    throw new Error(datos && datos.error ? datos.error : 'Error ' + respuesta.status);
+  }
+  return datos;
+}
+
+function infoCategoria(id) {
+  return categorias.find(c => c.id === id);
+}
+
+/* ================= CATEGORÍAS ================= */
+
+// GET /api/componentes/categorias
+async function cargarCategorias() {
+  categorias = await llamar(API + '/categorias');
+  const selector = $('categoria');
+  const filtro = $('filtroCategoria');
+  selector.innerHTML = '';
+  filtro.innerHTML = '<option value="">Todas las categorías</option>';
+
+  categorias.forEach(c => {
+    const opcion = el('option', c.nombre);
+    opcion.value = c.id;
+    selector.append(opcion);
+
+    const opFiltro = el('option', c.nombre);
+    opFiltro.value = c.id;
+    filtro.append(opFiltro);
+  });
+
+  $('statCategorias').textContent = categorias.length;
+  actualizarCampos();
+}
+
+// La etiqueta del campo "detalle" cambia según la categoría elegida
+function actualizarCampos() {
+  const info = infoCategoria($('categoria').value);
+  $('etiquetaDetalle').textContent = info ? info.etiquetaDetalle : 'Detalle';
+}
+
+/* ================= COMPONENTES ================= */
+
+/* ================= COMPONENTES ================= */
+
+let paginaActual = 0;
+let totalPaginas = 1;
+
+function actualizarPaginacion(totalElementos) {
+  const info = $('infoPagina');
+  if (info) {
+    info.textContent = `Página ${paginaActual + 1} de ${totalPaginas} (${totalElementos} resultados)`;
+  }
+  if ($('btnAnterior')) $('btnAnterior').disabled = paginaActual <= 0;
+  if ($('btnSiguiente')) $('btnSiguiente').disabled = paginaActual + 1 >= totalPaginas;
+}
+
+async function cargarComponentes(pagina = paginaActual) {
+  paginaActual = Math.max(0, pagina);
+  try {
+    const size = Number($('tamPagina')?.value || 8);
+    const catFiltro = $('filtroCategoria')?.value || '';
+    const texto = $('buscar')?.value.trim() || '';
+
+    const params = new URLSearchParams({
+      page: String(paginaActual),
+      size: String(size),
+      soloBajoStock: String(soloBajos)
+    });
+    if (catFiltro) params.set('categoria', catFiltro);
+    if (texto) params.set('q', texto);
+
+    const [respPagina, todos, bajos] = await Promise.all([
+      llamar(`${API}?${params.toString()}`),
+      llamar(`${API}?page=0&size=500`),
+      llamar(`${API}/bajo-stock`)
+    ]);
+
+    const esPagina = respPagina && Array.isArray(respPagina.content);
+    const listaPagina = esPagina ? respPagina.content : (Array.isArray(respPagina) ? respPagina : []);
+    totalPaginas = esPagina ? Math.max(1, respPagina.totalPages || 1) : 1;
+    paginaActual = esPagina && typeof respPagina.number === 'number' ? respPagina.number : paginaActual;
+
+    const listaTodos = (todos && Array.isArray(todos.content)) ? todos.content : (Array.isArray(todos) ? todos : []);
+    componentes = listaTodos;
+    codigosBajos = new Set((Array.isArray(bajos) ? bajos : []).map(c => c.codigo));
+
+    if ($('statTotal')) $('statTotal').textContent = componentes.length;
+    if ($('statBajo')) $('statBajo').textContent = codigosBajos.size;
+
+    pintarTabla(listaPagina);
+    actualizarPaginacion(esPagina && typeof respPagina.totalElements === 'number' ? respPagina.totalElements : listaPagina.length);
+    if (typeof llenarSelectorComponentes === 'function') {
+      llenarSelectorComponentes();
+    }
+  } catch (e) {
+    console.error('Error cargarComponentes:', e);
+    aviso(e.message, true);
+  }
+}
+
+function pintarTabla(lista) {
+  const cuerpo = $('cuerpo');
+  cuerpo.innerHTML = '';
+  if (lista.length === 0) {
+    const fila = el('tr');
+    const td = el('td', 'No hay componentes para mostrar', 'vacio');
+    td.colSpan = 7;
+    fila.append(td);
+    cuerpo.append(fila);
+    return;
+  }
+  lista.forEach(c => {
+    const fila = el('tr');
+    const info = infoCategoria(c.categoria);
+
+    const tdCodigo = el('td');
+    tdCodigo.append(el('strong', c.codigo));
+
+    const tdCategoria = el('td');
+    tdCategoria.append(el('span', info ? info.nombre : c.categoria, 'insignia cat-' + c.categoria));
+
+    const tdCantidad = el('td', c.cantidad);
+    if (codigosBajos.has(c.codigo)) {
+      tdCantidad.append(el('span', 'Bajo stock', 'insignia bajo'));
+    }
+
+    const detalle = (info ? info.etiquetaDetalle : 'Detalle') + ': ' + c.detalle;
+
+    const tdAcciones = el('td');
+    tdAcciones.append(
+            boton('Editar', () => editar(c)),
+            ' ',
+            boton('Eliminar', () => eliminar(c.codigo), 'btn peligro peq')
+    );
+
+    fila.append(tdCodigo, tdCategoria, el('td', c.nombre), tdCantidad, el('td', c.ubicacion), el('td', detalle), tdAcciones);
+    cuerpo.append(fila);
+  });
+}
+
+async function buscar() {
+  await cargarComponentes(0);
+}
+
+function limpiar() {
+  $('formulario').reset();
+  codigoEditando = null;
+  $('categoria').disabled = false;
+  $('tituloFormulario').textContent = 'Registrar componente';
+  $('notaCodigo').textContent = 'El código se genera automáticamente al guardar.';
+  $('btnGuardar').textContent = 'Crear componente';
+  $('btnCancelar').classList.add('oculto');
+  actualizarCampos();
+}
+
+function editar(c) {
+  codigoEditando = c.codigo;
+  $('categoria').value = c.categoria;
+  actualizarCampos();
+  $('nombre').value = c.nombre;
+  $('cantidad').value = c.cantidad;
+  $('ubicacion').value = c.ubicacion;
+  $('detalle').value = c.detalle;
+  $('categoria').disabled = true;
+  $('tituloFormulario').textContent = 'Editar componente ' + c.codigo;
+  $('notaCodigo').textContent = 'El código y la categoría no se pueden cambiar.';
+  $('btnGuardar').textContent = 'Guardar cambios';
+  $('btnCancelar').classList.remove('oculto');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function guardar(evento) {
+  evento.preventDefault();
+  const componente = {
+    categoria: $('categoria').value,
+    nombre: $('nombre').value.trim(),
+    cantidad: Number($('cantidad').value),
+    ubicacion: $('ubicacion').value.trim(),
+    detalle: $('detalle').value.trim()
+  };
+
+  const editando = codigoEditando !== null;
+  const url = editando ? API + '/' + encodeURIComponent(codigoEditando) : API;
+  try {
+    const guardado = await llamar(url, {
+      method: editando ? 'PUT' : 'POST',
+      headers: CABECERAS,
+      body: JSON.stringify(componente)
+    });
+    aviso(editando ? 'Componente actualizado' : 'Componente creado con el código ' + guardado.codigo, false);
+    limpiar();
+    refrescar();
+  } catch (e) {
+    aviso(e.message, true);
+  }
+}
+
+async function eliminar(codigo) {
+  if (!confirm('¿Eliminar el componente ' + codigo + '?')) return;
+  try {
+    await llamar(API + '/' + encodeURIComponent(codigo), { method: 'DELETE' });
+    aviso('Componente eliminado', false);
+    refrescar();
+  } catch (e) {
+    aviso(e.message, true);
+  }
+}
+
+/* ================= KITS ================= */
+
+// GET /api/kits
+async function cargarKits() {
+  try {
+    const kits = await llamar(API_KITS);
+    $('statKits').textContent = kits.length;
+    const contenedor = $('listaKits');
+    contenedor.innerHTML = '';
+    if (kits.length === 0) {
+      contenedor.append(el('p', 'Aún no hay kits. Crea el primero.', 'vacio'));
+    }
+    kits.forEach(k => {
+      const tarjeta = el('div', null, 'kit');
+
+      const cabecera = el('div', null, 'kit-cab');
+      const titulo = el('div');
+      titulo.append(el('strong', k.nombre), el('span', ' · ' + k.codigo, 'suave'));
+      cabecera.append(titulo, boton('Eliminar kit', () => eliminarKit(k.codigo), 'btn peligro peq'));
+      tarjeta.append(cabecera);
+
+      const fichas = el('div', null, 'fichas');
+      if (k.componentes.length === 0) {
+        fichas.append(el('span', 'Sin componentes', 'suave'));
+      }
+      k.componentes.forEach(c => {
+        const ficha = el('span', null, 'ficha cat-' + c.categoria);
+        ficha.append(c.codigo + ' · ' + c.nombre);
+        const quitar = el('button', '×', 'quitar');
+        quitar.type = 'button';
+        quitar.title = 'Quitar del kit';
+        quitar.addEventListener('click', () => quitarDelKit(k.codigo, c.codigo));
+        ficha.append(quitar);
+        fichas.append(ficha);
+      });
+      tarjeta.append(fichas);
+      contenedor.append(tarjeta);
+    });
+    llenarSelectorKits(kits);
+  } catch (e) {
+    aviso(e.message, true);
+  }
+}
+
+function llenarSelectorKits(kits) {
+  const selector = $('selKit');
+  selector.innerHTML = '';
+  kits.forEach(k => {
+    const opcion = el('option', k.codigo + ' · ' + k.nombre);
+    opcion.value = k.codigo;
+    selector.append(opcion);
+  });
+}
+
+function llenarSelectorComponentes() {
+  ['selComp', 'selPrestamoComp', 'selNovedadComp'].forEach(idSelector => {
+    const selector = $(idSelector);
+    const elegido = selector.value;
+    selector.innerHTML = '';
+    componentes.forEach(c => {
+      const opcion = el('option', c.codigo + ' · ' + c.nombre + ' (' + c.cantidad + ' disp.)');
+      opcion.value = c.codigo;
+      selector.append(opcion);
+    });
+    if (elegido) selector.value = elegido;
+  });
+}
+
+// POST /api/kits
+async function crearKit(evento) {
+  evento.preventDefault();
+  try {
+    const kit = await llamar(API_KITS, {
+      method: 'POST',
+      headers: CABECERAS,
+      body: JSON.stringify({ nombre: $('kitNombre').value.trim() })
+    });
+    aviso('Kit creado con el código ' + kit.codigo, false);
+    $('formKit').reset();
+    cargarKits();
+  } catch (e) {
+    aviso(e.message, true);
+  }
+}
+
+// POST /api/kits/{kit}/componentes/{componente}
+async function agregarAlKit(evento) {
+  evento.preventDefault();
+  const kit = $('selKit').value;
+  const componente = $('selComp').value;
+  if (!kit || !componente) {
+    aviso('Selecciona un kit y un componente', true);
+    return;
+  }
+  try {
+    await llamar(API_KITS + '/' + encodeURIComponent(kit) + '/componentes/' + encodeURIComponent(componente), { method: 'POST' });
+    aviso('Componente agregado al kit', false);
+    cargarKits();
+  } catch (e) {
+    aviso(e.message, true);
+  }
+}
+
+// DELETE /api/kits/{kit}/componentes/{componente}
+async function quitarDelKit(kit, componente) {
+  try {
+    await llamar(API_KITS + '/' + encodeURIComponent(kit) + '/componentes/' + encodeURIComponent(componente), { method: 'DELETE' });
+    aviso('Componente quitado del kit', false);
+    cargarKits();
+  } catch (e) {
+    aviso(e.message, true);
+  }
+}
+
+// DELETE /api/kits/{kit}
+async function eliminarKit(codigo) {
+  if (!confirm('¿Eliminar el kit ' + codigo + '?')) return;
+  try {
+    await llamar(API_KITS + '/' + encodeURIComponent(codigo), { method: 'DELETE' });
+    aviso('Kit eliminado', false);
+    cargarKits();
+  } catch (e) {
+    aviso(e.message, true);
+  }
+}
+
+/* ================= PRÉSTAMOS ================= */
+
+function formatoFecha(iso) {
+  return iso ? new Date(iso).toLocaleString('es-CO') : '—';
+}
+
+function filaVacia(cuerpo, columnas, texto) {
+  const fila = el('tr');
+  const td = el('td', texto, 'vacio');
+  td.colSpan = columnas;
+  fila.append(td);
+  cuerpo.append(fila);
+}
+
+// GET /api/prestamos
+async function cargarPrestamos() {
+  try {
+    prestamos = await llamar(API_PRESTAMOS);
+    $('statPrestamos').textContent = prestamos.filter(p => p.estado === 'PRESTADO').length;
+    pintarPrestamos();
+  } catch (e) {
+    aviso(e.message, true);
+  }
+}
+
+function pintarPrestamos() {
+  const cuerpo = $('cuerpoPrestamos');
+  cuerpo.innerHTML = '';
+  const lista = soloPendientes ? prestamos.filter(p => p.estado === 'PRESTADO') : prestamos;
+  if (lista.length === 0) {
+    filaVacia(cuerpo, 8, 'No hay préstamos para mostrar');
+    return;
+  }
+  lista.forEach(p => {
+    const fila = el('tr');
+    const tdEstado = el('td');
+    tdEstado.append(el('span', p.estado === 'PRESTADO' ? 'Prestado' : 'Devuelto', 'insignia estado-' + p.estado));
+    const tdAcciones = el('td');
+    if (p.estado === 'PRESTADO') {
+      tdAcciones.append(boton('Registrar devolución', () => devolver(p.id)));
+    }
+    fila.append(
+      el('td', '#' + p.id),
+      el('td', p.codigoComponente + ' · ' + p.nombreComponente),
+      el('td', p.solicitante),
+      el('td', p.cantidad),
+      el('td', formatoFecha(p.fechaHoraPrestamo)),
+      el('td', formatoFecha(p.fechaHoraDevolucion)),
+      tdEstado,
+      tdAcciones
+    );
+    cuerpo.append(fila);
+  });
+}
+
+// POST /api/prestamos
+async function crearPrestamo(evento) {
+  evento.preventDefault();
+  const codigo = $('selPrestamoComp').value;
+  if (!codigo) {
+    aviso('Selecciona un componente', true);
+    return;
+  }
+  try {
+    await llamar(API_PRESTAMOS, {
+      method: 'POST',
+      headers: CABECERAS,
+      body: JSON.stringify({
+        codigoComponente: codigo,
+        solicitante: $('prestamoSolicitante').value.trim(),
+        cantidad: Number($('prestamoCantidad').value)
+      })
+    });
+    aviso('Préstamo registrado', false);
+    $('formPrestamo').reset();
+    refrescar();
+  } catch (e) {
+    aviso(e.message, true);
+  }
+}
+
+// POST /api/prestamos/{id}/devolucion
+async function devolver(id) {
+  if (!confirm('¿Registrar la devolución del préstamo #' + id + '?')) return;
+  try {
+    await llamar(API_PRESTAMOS + '/' + id + '/devolucion', { method: 'POST' });
+    aviso('Devolución registrada', false);
+    refrescar();
+  } catch (e) {
+    aviso(e.message, true);
+  }
+}
+
+/* ================= NOVEDADES ================= */
+
+const NOMBRES_TIPO = { DANADO: 'Dañado', EXTRAVIADO: 'Extraviado', FUERA_DE_SERVICIO: 'Fuera de servicio' };
+
+// GET /api/novedades
+async function cargarNovedades() {
+  try {
+    const lista = await llamar(API_NOVEDADES);
+    const cuerpo = $('cuerpoNovedades');
+    cuerpo.innerHTML = '';
+    if (lista.length === 0) {
+      filaVacia(cuerpo, 6, 'No hay novedades registradas');
+      return;
+    }
+    lista.forEach(n => {
+      const fila = el('tr');
+      const tdTipo = el('td');
+      tdTipo.append(el('span', NOMBRES_TIPO[n.tipo] || n.tipo, 'insignia tipo-' + n.tipo));
+      fila.append(
+        el('td', '#' + n.id),
+        el('td', n.codigoComponente + ' · ' + n.nombreComponente),
+        tdTipo,
+        el('td', n.cantidad),
+        el('td', n.descripcion),
+        el('td', formatoFecha(n.fechaHora))
+      );
+      cuerpo.append(fila);
+    });
+  } catch (e) {
+    aviso(e.message, true);
+  }
+}
+
+// POST /api/novedades
+async function crearNovedad(evento) {
+  evento.preventDefault();
+  const codigo = $('selNovedadComp').value;
+  if (!codigo) {
+    aviso('Selecciona un componente', true);
+    return;
+  }
+  try {
+    await llamar(API_NOVEDADES, {
+      method: 'POST',
+      headers: CABECERAS,
+      body: JSON.stringify({
+        codigoComponente: codigo,
+        tipo: $('novedadTipo').value,
+        cantidad: Number($('novedadCantidad').value),
+        descripcion: $('novedadDescripcion').value.trim()
+      })
+    });
+    aviso('Novedad registrada', false);
+    $('formNovedad').reset();
+    refrescar();
+  } catch (e) {
+    aviso(e.message, true);
+  }
+}
+
+/* ================= GENERAL ================= */
+
+function refrescar() {
+  cargarComponentes();
+  cargarKits();
+  cargarPrestamos();
+  cargarNovedades();
+}
+
+const PANELES = ['Componentes', 'Kits', 'Prestamos', 'Novedades'];
+
+function mostrarPanel(nombre) {
+  PANELES.forEach(p => {
+    $('panel' + p).classList.toggle('oculto', p !== nombre);
+    $('pestana' + p).classList.toggle('activa', p === nombre);
+  });
+}
+
+$('categoria').addEventListener('change', actualizarCampos);
+$('formulario').addEventListener('submit', guardar);
+$('btnCancelar').addEventListener('click', limpiar);
+$('btnBuscar').addEventListener('click', () => cargarComponentes(0));
+$('buscar').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); cargarComponentes(0); } });
+$('filtroCategoria').addEventListener('change', () => cargarComponentes(0));
+$('tamPagina').addEventListener('change', () => cargarComponentes(0));
+$('btnTodos').addEventListener('click', () => {
+  soloBajos = false;
+  $('filtroCategoria').value = '';
+  $('buscar').value = '';
+  cargarComponentes(0);
+});
+$('btnBajoStock').addEventListener('click', () => {
+  soloBajos = true;
+  cargarComponentes(0);
+});
+$('btnAnterior').addEventListener('click', () => {
+  if (paginaActual > 0) cargarComponentes(paginaActual - 1);
+});
+$('btnSiguiente').addEventListener('click', () => {
+  if (paginaActual + 1 < totalPaginas) cargarComponentes(paginaActual + 1);
+});
+$('formKit').addEventListener('submit', crearKit);
+$('formAgregar').addEventListener('submit', agregarAlKit);
+$('formPrestamo').addEventListener('submit', crearPrestamo);
+$('formNovedad').addEventListener('submit', crearNovedad);
+$('btnPrestamosTodos').addEventListener('click', () => { soloPendientes = false; pintarPrestamos(); });
+$('btnPrestamosPendientes').addEventListener('click', () => { soloPendientes = true; pintarPrestamos(); });
+PANELES.forEach(p => $('pestana' + p).addEventListener('click', () => mostrarPanel(p)));
+
+// Primero las categorías (para pintar bien la tabla) y luego los datos
+cargarCategorias().then(refrescar).catch(e => aviso(e.message, true));
+</script>
+</body>
+</html>

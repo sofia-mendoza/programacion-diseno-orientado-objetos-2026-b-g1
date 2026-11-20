@@ -1,6 +1,6 @@
 package com.corhuila.proyecto.controller;
 
-import com.corhuila.proyecto.model.Kit;
+import com.corhuila.proyecto.dto.KitDTO;
 import com.corhuila.proyecto.service.KitService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -18,30 +18,30 @@ public class KitController {
     }
 
     @GetMapping
-    public List<Kit> listar() {
+    public List<KitDTO> listar() {
         return service.listar();
     }
 
     @GetMapping("/{codigo}")
-    public Kit buscar(@PathVariable String codigo) {
+    public KitDTO buscar(@PathVariable String codigo) {
         return service.buscarPorCodigo(codigo);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Kit crear(@RequestBody Kit kit) {
-        return service.crear(kit);
+    public KitDTO crear(@RequestBody KitDTO dto) {
+        return service.crear(dto);
     }
 
     @PostMapping("/{codigoKit}/componentes/{codigoComponente}")
-    public Kit agregarComponente(@PathVariable String codigoKit,
-                                 @PathVariable String codigoComponente) {
+    public KitDTO agregarComponente(@PathVariable String codigoKit,
+                                    @PathVariable String codigoComponente) {
         return service.agregarComponente(codigoKit, codigoComponente);
     }
 
     @DeleteMapping("/{codigoKit}/componentes/{codigoComponente}")
-    public Kit quitarComponente(@PathVariable String codigoKit,
-                                @PathVariable String codigoComponente) {
+    public KitDTO quitarComponente(@PathVariable String codigoKit,
+                                   @PathVariable String codigoComponente) {
         return service.quitarComponente(codigoKit, codigoComponente);
     }
 

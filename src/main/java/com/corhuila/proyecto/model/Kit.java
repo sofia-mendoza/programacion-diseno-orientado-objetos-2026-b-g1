@@ -30,8 +30,7 @@ public class Kit {
     protected Kit() {
     }
 
-    public Kit(String codigo, String nombre) {
-        setCodigo(codigo);
+    public Kit(String nombre) {
         setNombre(nombre);
     }
 
@@ -44,7 +43,8 @@ public class Kit {
         return Collections.unmodifiableList(componentes);
     }
 
-    public void setCodigo(String codigo) {
+    // Solo el servicio asigna el código (automático), una única vez
+    public void asignarCodigo(String codigo) {
         if (codigo == null || codigo.isBlank()) {
             throw new IllegalArgumentException("El código del kit no puede estar vacío");
         }

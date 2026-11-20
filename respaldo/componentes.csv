@@ -1,4 +1,4 @@
 tipo;codigo;nombre;cantidad;ubicacion;extra
-ACTUADOR;A-001;Servo SG90;3;Estante B;5.0
-SENSOR;S-001;HC-SR04;10;Estante A;distancia
-SENSOR;S-002;DHT11;8;Estantse A;temperatura
+ACTUADOR;A-001;Servo SG90;5;Estante B;5.0
+SENSOR;S-001;HC-SR04;10;Estante A;Distancia
+SENSOR;S-002;DHT11;8;Estante A;Temperatura
