@@ -1,0 +1,581 @@
+{
+  "info": {
+    "name": "Inventario Laboratorio de Mecatrónica",
+    "description": "Colección para probar la API. La aplicación debe estar ejecutándose en localhost:8080.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    }
+  ],
+  "item": [
+    {
+      "name": "Componentes",
+      "item": [
+        {
+          "name": "1. Listar categorías",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/componentes/categorias",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "componentes",
+                "categorias"
+              ]
+            },
+            "description": "Las 5 categorías con el nombre del dato propio de cada una."
+          }
+        },
+        {
+          "name": "2. Listar todos los componentes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/componentes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "componentes"
+              ]
+            }
+          }
+        },
+        {
+          "name": "3. Buscar un componente por código",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/componentes/MEC-001",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "componentes",
+                "MEC-001"
+              ]
+            }
+          }
+        },
+        {
+          "name": "4. Componentes con bajo stock",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/componentes/bajo-stock",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "componentes",
+                "bajo-stock"
+              ]
+            }
+          }
+        },
+        {
+          "name": "5. Descripciones (polimorfismo)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/componentes/descripciones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "componentes",
+                "descripciones"
+              ]
+            },
+            "description": "Cada categoría se describe a su manera."
+          }
+        },
+        {
+          "name": "6. Crear componente (el código se genera solo)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/componentes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "componentes"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoria\": \"ROBOTICA\",\n  \"nombre\": \"Sensor de color TCS3200\",\n  \"cantidad\": 6,\n  \"ubicacion\": \"Estante D3\",\n  \"detalle\": \"Arduino\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "No se envía el código: el sistema lo genera (ROB-008, por ejemplo). Categorías: MECANICA_POTENCIA, ELECTRONICA_INSTRUMENTACION, AUTOMATIZACION_CONTROL, ROBOTICA, PROTOTIPADO_MANUFACTURA."
+          }
+        },
+        {
+          "name": "7. Actualizar componente",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/componentes/MEC-001",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "componentes",
+                "MEC-001"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Engranaje recto de 20 dientes\",\n  \"cantidad\": 20,\n  \"ubicacion\": \"Estante A1\",\n  \"detalle\": \"acero\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Cambia nombre, cantidad, ubicación y dato propio. El código y la categoría no cambian."
+          }
+        },
+        {
+          "name": "8. Eliminar componente",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/componentes/ROB-008",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "componentes",
+                "ROB-008"
+              ]
+            },
+            "description": "Cambia el código por uno que exista. Si tiene préstamos, novedades o está en un kit responde 409."
+          }
+        },
+        {
+          "name": "ERROR 404 - componente que no existe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/componentes/XXX",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "componentes",
+                "XXX"
+              ]
+            }
+          }
+        },
+        {
+          "name": "ERROR 400 - cantidad negativa",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/componentes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "componentes"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoria\": \"ROBOTICA\",\n  \"nombre\": \"Prueba\",\n  \"cantidad\": -5,\n  \"ubicacion\": \"Estante D3\",\n  \"detalle\": \"Arduino\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "ERROR 400 - voltaje que no es número",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/componentes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "componentes"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoria\": \"AUTOMATIZACION_CONTROL\",\n  \"nombre\": \"Prueba\",\n  \"cantidad\": 1,\n  \"ubicacion\": \"Estante C1\",\n  \"detalle\": \"abc\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Kits",
+      "item": [
+        {
+          "name": "1. Listar kits",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/kits",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "kits"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2. Crear kit (el código se genera solo)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/kits",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "kits"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Kit de robotica basica\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "3. Buscar kit por código",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/kits/KIT-001",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "kits",
+                "KIT-001"
+              ]
+            }
+          }
+        },
+        {
+          "name": "4. Agregar componente al kit",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/kits/KIT-001/componentes/ROB-003",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "kits",
+                "KIT-001",
+                "componentes",
+                "ROB-003"
+              ]
+            }
+          }
+        },
+        {
+          "name": "5. Quitar componente del kit",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/kits/KIT-001/componentes/ROB-003",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "kits",
+                "KIT-001",
+                "componentes",
+                "ROB-003"
+              ]
+            }
+          }
+        },
+        {
+          "name": "6. Eliminar kit",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/kits/KIT-001",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "kits",
+                "KIT-001"
+              ]
+            }
+          }
+        },
+        {
+          "name": "ERROR 404 - kit que no existe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/kits/XXX",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "kits",
+                "XXX"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Préstamos",
+      "item": [
+        {
+          "name": "1. Listar préstamos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/prestamos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "prestamos"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2. Registrar préstamo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/prestamos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "prestamos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigoComponente\": \"ROB-003\",\n  \"solicitante\": \"Ana Perez\",\n  \"cantidad\": 2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "La fecha y la hora las pone el sistema, y se descuentan las unidades del inventario."
+          }
+        },
+        {
+          "name": "3. Registrar devolución",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/prestamos/1/devolucion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "prestamos",
+                "1",
+                "devolucion"
+              ]
+            },
+            "description": "Cambia el 1 por el número del préstamo. Repone las unidades."
+          }
+        },
+        {
+          "name": "ERROR 409 - prestar más de lo disponible",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/prestamos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "prestamos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigoComponente\": \"ROB-003\",\n  \"solicitante\": \"Ana Perez\",\n  \"cantidad\": 9999\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Novedades",
+      "item": [
+        {
+          "name": "1. Listar novedades",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/novedades",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "novedades"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2. Registrar novedad (dañado)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/novedades",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "novedades"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigoComponente\": \"ELE-003\",\n  \"tipo\": \"DANADO\",\n  \"cantidad\": 1,\n  \"descripcion\": \"Se quemo durante una practica\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Tipos: DANADO, EXTRAVIADO o FUERA_DE_SERVICIO. Descuenta las unidades afectadas del inventario."
+          }
+        }
+      ]
+    }
+  ]
+}
